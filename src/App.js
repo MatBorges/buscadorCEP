@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
+import api from './services/api';
 
 
 
@@ -12,6 +13,7 @@ import './style.css';
 
 function App() {
 const [input, setInput] = useState('')
+const [respCep, setCep] = useState({})
 
 async function handleSearch(){
   if(input === ''){
@@ -19,12 +21,18 @@ async function handleSearch(){
     return
   }
 
-  // try {
-  //   const response = await api.get(`${input}/json`)
-  //   console.log(response)
-  // } catch{
-  //   alert('Ops, erro ao buscar!!')
-  // }
+  try {
+    const resp = await api.get(`${input}/json`)
+    setCep(resp.data)
+    setInput('')
+  } 
+  catch (error) {
+    alert('Ops, erro ao buscar, tente novamente!')
+    setInput('')
+  }
+
+
+  
 }
 
   return (
@@ -36,13 +44,15 @@ async function handleSearch(){
           <FiSearch size={30} color="#FFF"/>
         </button>
       </div>
+      {Object.keys(respCep).length > 0 &&(
         <main className="main">
-          <h2>CEP: 79010400</h2>
-          <span>Avenida Monte Castelo</span>
-          <span>Complemento Alguma Coisa</span>
-          <span>Bairro Monte Castelo</span>
-          <span>Campo Grande - MS</span>
+          <h2>{respCep.cep}</h2>
+          <span>{respCep.logradouro}</span>
+          <span>{respCep.complemento}</span>
+          <span>{respCep.bairro}</span>
+          <span>{respCep.localidade} {respCep.uf}</span>
         </main>
+      )}
     </div>
   );
 }
